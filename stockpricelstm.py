@@ -11,14 +11,14 @@ import numpy as np
 import pandas_datareader as web
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler 
-import math
-import pandas as pd
+#import math
+#import pandas as pd
 from keras.models import Sequential
 from keras.layers import Dense, LSTM, Dropout
 from tensorflow import keras
 plt.style.use('fivethirtyeight')
 
-df = web.DataReader('INDF.JK', data_source='yahoo', start = '2018-01-01', end = '2020-07-01')
+df = web.DataReader('INDF.JK', data_source='yahoo', start = '2018-01-01', end = '2020-08-01')
 
 df.shape
 
@@ -28,7 +28,7 @@ plt.title('Stock price plot')
 plt.plot(df['Close'])
 plt.xlabel('date', fontsize = 10)
 plt.ylabel('price', fontsize = 10)
-plt.show()
+#plt.show()
 
 data = df.filter(['Close'])
 dataset = data.values
@@ -37,11 +37,14 @@ training_data_len = len(dataset) #642
 scaler = MinMaxScaler()
 scaled_data = scaler.fit_transform(dataset) #scaled_data.shape = (642, 1)
 
-train_data = scaled_data[0:training_data_len-60,:] #0 sampai 582, train_data.shape = (582,1)
+h = 80 #Jumlah test
+inp = 60 #Besar input
+
+train_data = scaled_data[0:training_data_len-h,:] #0 sampai 582, train_data.shape = (582,1)
 x_train = []
 y_train = []
-for i in range(60, len(train_data)): #len(train_data) = 582, i = 60 sampai 581
-  x_train.append(train_data[i-60:i, 0])
+for i in range(inp, len(train_data)): #len(train_data) = 582, i = 60 sampai 581
+  x_train.append(train_data[i-inp:i, 0])
   y_train.append(train_data[i, 0])
   #if i<=60:
   #  print(x_train)
@@ -54,24 +57,24 @@ x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1)) #x_train.
 x_train.shape[1]
 
 model = Sequential()
-model.add(LSTM(100, return_sequences=True, input_shape=(x_train.shape[1], 1)))
+model.add(LSTM(60, return_sequences=True, input_shape=(x_train.shape[1], 1)))
 model.add(LSTM(100, return_sequences=False))
 model.add(Dropout(0.4))
 model.add(Dense(25))
 model.add(Dense(1))
-model.compile(optimizer = keras.optimizers.Adam(learning_rate=0.002), loss = 'mean_squared_error')
+model.compile(optimizer = keras.optimizers.Adam(learning_rate=0.003), loss = 'mean_squared_error')
 
-model.fit(x_train, y_train, batch_size=1, epochs=2)
+model.fit(x_train, y_train, batch_size=1, epochs=3)
 #trained_weight = model.get_weights()[0]
 #trained_bias = model.get_weights()[1]
 #print('Weight: ', trained_weight)
 #print('Bias: ', trained_bias)
 
-test_data = scaled_data[training_data_len-120:training_data_len,:] #522 sampai 642, test_data.shape = (60, 1)
+test_data = scaled_data[training_data_len-(inp+h):training_data_len,:] #522 sampai 642, test_data.shape = (60, 1)
 x_test = []
 y_test = []
-for i in range(60, len(test_data)):
-  x_test.append(test_data[i-60:i, 0])
+for i in range(inp, len(test_data)):
+  x_test.append(test_data[i-inp:i, 0])
   y_test.append(train_data[i, 0])
   #if i==61:
     #print(x_test)
@@ -86,11 +89,11 @@ rmse = np.sqrt(np.mean((predictions- y_test)**2))
 print(rmse)
 predictions = scaler.inverse_transform(predictions)
 
-train = data[:training_data_len-60]
-valid = data[training_data_len-60:training_data_len]
+train = data[:training_data_len-inp]
+valid = data[training_data_len-h:training_data_len]
 valid['Predictions'] = predictions
 plt.figure(figsize=(20,10))
-plt.title('model')
+plt.title('Harga Closing INDF 1 Januari 2018 s.d. 1 Agustus 2020')
 plt.xlabel('Tanggal', fontsize = 16 )
 plt.ylabel('Harga Close', fontsize = 16 )
 plt.plot(train['Close'])
@@ -99,7 +102,7 @@ plt.legend(['Train','Val','Predictions'], loc = 'lower right')
 plt.show()
 
 hari = int(input("Jumlah hari: "))
-data_pred = scaled_data[training_data_len-60:training_data_len,:] #60 nilai terakhir dari dataset
+data_pred = scaled_data[training_data_len-inp:training_data_len,:] #60 nilai terakhir dari dataset
 x_pred = []
 print(x_pred)
 y_pred = []
