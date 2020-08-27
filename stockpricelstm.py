@@ -35,24 +35,24 @@ dataset = data.values
 training_data_len = len(dataset) #642
 
 scaler = MinMaxScaler()
-scaled_data = scaler.fit_transform(dataset) #scaled_data.shape = (642, 1)
+scaled_data = scaler.fit_transform(dataset)
 
 h = 80 #Jumlah test
 inp = 60 #Besar input
 
-train_data = scaled_data[0:training_data_len-h,:] #0 sampai 582, train_data.shape = (582,1)
+train_data = scaled_data[0:training_data_len-h,:]
 x_train = []
 y_train = []
-for i in range(inp, len(train_data)): #len(train_data) = 582, i = 60 sampai 581
+for i in range(inp, len(train_data)):
   x_train.append(train_data[i-inp:i, 0])
   y_train.append(train_data[i, 0])
   #if i<=60:
   #  print(x_train)
   #  print(y_train)
 
-x_train, y_train = np.array(x_train), np.array(y_train) #x_train.shape = (522, 60), y_train.shape = (522,)
+x_train, y_train = np.array(x_train), np.array(y_train)
 
-x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1)) #x_train.shape = (522, 60, 1)
+x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
 
 x_train.shape[1]
 
@@ -70,15 +70,13 @@ model.fit(x_train, y_train, batch_size=1, epochs=3)
 #print('Weight: ', trained_weight)
 #print('Bias: ', trained_bias)
 
-test_data = scaled_data[training_data_len-(inp+h):training_data_len,:] #522 sampai 642, test_data.shape = (60, 1)
+test_data = scaled_data[training_data_len-(inp+h):training_data_len,:]
 x_test = []
 y_test = []
 for i in range(inp, len(test_data)):
   x_test.append(test_data[i-inp:i, 0])
   y_test.append(train_data[i, 0])
-  #if i==61:
-    #print(x_test)
-    #print(y_test)
+
 
 x_test,y_test = np.array(x_test), np.array(y_test)
 
@@ -100,18 +98,3 @@ plt.plot(train['Close'])
 plt.plot(valid[['Close','Predictions']])
 plt.legend(['Train','Val','Predictions'], loc = 'lower right')
 plt.show()
-
-hari = int(input("Jumlah hari: "))
-data_pred = scaled_data[training_data_len-inp:training_data_len,:] #60 nilai terakhir dari dataset
-x_pred = []
-print(x_pred)
-y_pred = []
-for i in range(0,hari):
-  x_pred = np.append(x_pred, data_pred[i:i+61, 0])
-  print(x_pred)
-  #x_pred = np.array(x_pred)
-  x_pred = np.reshape(x_pred, (1, 60, 1))
-  predict = model.predict(x_pred)
-  print(predict)
-  y_pred = np.append(y_pred, predict)
-  data_pred = np.append(data_pred, predict)
