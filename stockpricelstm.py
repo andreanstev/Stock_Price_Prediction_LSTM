@@ -11,8 +11,7 @@ import numpy as np
 import pandas_datareader as web
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler 
-#import math
-#import pandas as pd
+import pandas as pd
 from keras.models import Sequential
 from keras.layers import Dense, LSTM, Dropout
 from tensorflow import keras
@@ -91,11 +90,16 @@ train = data[:training_data_len-inp]
 valid = data[training_data_len-h:training_data_len]
 valid['Predictions'] = predictions
 plt.figure(figsize=(20,10))
-plt.title('Harga Closing INDF 1 Januari 2018 s.d. 1 Agustus 2020')
+plt.title('Harga Closing ASII 1 Januari 2018 s.d. 1 September 2020')
 plt.xlabel('Tanggal', fontsize = 16 )
 plt.ylabel('Harga Close', fontsize = 16 )
 plt.plot(train['Close'])
 plt.plot(valid[['Close','Predictions']])
+x = to_datetime('2018/02/01', format='%Y/%m/%d')
+str1 = 'Learning rate: {}'.format(learning_rate)
+str2 = 'Epoch: {}'.format(epoch)
+plt.annotate(str1, (x,4200), (x,4200), fontsize=12)
+plt.annotate(str2, (x,4100), (x,4100), fontsize=12)
 plt.legend(['Train','Val','Predictions'], loc = 'lower right')
 plt.show()
 
