@@ -98,3 +98,18 @@ plt.plot(train['Close'])
 plt.plot(valid[['Close','Predictions']])
 plt.legend(['Train','Val','Predictions'], loc = 'lower right')
 plt.show()
+
+#Prediksi untuk n hari kedepan
+hari = int(input("Jumlah hari: "))
+data_pred = scaled_data[training_data_len-inp:training_data_len,:] #input dataset untuk hari pertama
+for i in range(0,hari):
+  x_pred = 0
+  x_pred = np.vstack(data_pred[i:i+inp, 0])
+  x_pred = np.array(x_pred)
+  x_pred = np.reshape(x_pred, (x_pred.shape[1], x_pred.shape[0], 1))
+  predict = model.predict(x_pred)
+  data_pred = np.vstack((data_pred, predict))
+hasil_prediksi = data_pred[len(data_pred)-hari:len(data_pred),:]
+hasil_prediksi = scaler.inverse_transform(hasil_prediksi)
+print(hasil_prediksi) #Hasil prediksi
+plt.plot(hasil_prediksi)
