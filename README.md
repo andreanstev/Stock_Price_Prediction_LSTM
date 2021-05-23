@@ -4,3 +4,5 @@ Stock Price Prediction using LSTM Algorithm. This prediction model build based o
 
 Reference:
 - Stock Price Prediction Using Python & Machine Learning https://youtu.be/QIUxPv5PJOY
+- Stock Price Prediction Project with TensorFlow Keras https://youtu.be/dKBKNOn3gCE
+- Why Log Returns https://quantivity.wordpress.com/2011/02/21/why-log-returns/
